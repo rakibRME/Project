@@ -176,6 +176,6 @@ Replace `<project_name>` with your wandb project name, and `<wandb_entity>` with
 ## Acknowledgment
 [Leveraging the Feature Distribution in Transfer-based Few-Shot Learning](https://github.com/yhu01/PT-MAP)
 
-[S2M2 Charting the Right Manifold: Manifold Mixup for Few-shot Learning](https://arxiv.org/pdf/1907.12087.pdf)
 
-[Few-Shot Learning via Embedding Adaptation with Set-to-Set Functions](https://arxiv.org/pdf/1812.03664.pdf)
+
+
