@@ -11,7 +11,7 @@ git add -A
 for /f %%i in ('powershell -command "Get-Date -Format yyyy-MM-dd"') do set date=%%i
 
 :: Ask user for commit message
-set /p msg=Enter today’s work summary: 
+set /p msg=Enter today's work summary: 
 
 :: Commit with date + message
 git commit -m "%date%: %msg%"
