@@ -1,22 +1,27 @@
 @echo off
 cd /d %~dp0
 
-:: Pull latest changes first to avoid conflicts
+:: Pull latest changes to avoid conflicts
+echo Pulling from origin/main...
 git pull origin main --rebase
 
-:: Track all changes including deletions
+:: Stage all changes (including deletions)
+echo Adding all changes...
 git add -A
 
-:: Get today's date
+:: Get today's date (YYYY-MM-DD format)
 for /f %%i in ('powershell -command "Get-Date -Format yyyy-MM-dd"') do set date=%%i
 
-:: Ask user for commit message
+:: Prompt for commit message
 set /p msg=Enter today's work summary: 
 
-:: Commit with date + message
+:: Create commit with date and message
 git commit -m "%date%: %msg%"
 
 :: Push to GitHub
+echo Pushing to GitHub...
 git push origin main
 
+echo.
+echo ✅ All done!
 pause
