@@ -1,25 +1,21 @@
 #!/bin/bash
 
-cd /home/rmedu-4090/rkb/BPA || { echo "❌ Directory not found. Exiting."; exit 1; }
+cd /home/rmedu-4090/rkb/BPA || exit
 
-echo "📥 Pulling latest changes from origin/main..."
-git pull origin main --rebase || { echo "❌ Pull failed. Resolve conflicts and try again."; exit 1; }
+# Pull latest changes to avoid conflicts
+git pull origin main --rebase
 
-echo "📂 Staging all changes..."
+# Track all changes including deletions
 git add -A
 
+# Get today's date
 date=$(date +%F)
-read -p "📝 Enter today's work summary: " msg
 
-if [ -z "$msg" ]; then
-  echo "⚠️  Commit message cannot be empty. Exiting."
-  exit 1
-fi
+# Ask user for commit message
+read -p "Enter today's work summary: " msg
 
-echo "✅ Committing changes..."
+# Commit with date + message
 git commit -m "$date: $msg"
 
-echo "🚀 Pushing to GitHub..."
-git push origin main || { echo "❌ Push failed. Check your network or credentials."; exit 1; }
-
-echo "✅ All done!"
+# Push to GitHub
+git push origin main
