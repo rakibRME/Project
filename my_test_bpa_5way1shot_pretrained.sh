@@ -27,5 +27,5 @@ python3 train.py \
   --dropout 0.0 \
   --max_scale True \
   --mask_diag True \
-  --pretrained_path ./checkpoints/miniimagenet/wrn/pt_map_bpa/run_1shot_augFalse_pretrained-*/max_acc.pth
+  --pretrained_path ./checkpoints/miniimagenet/wrn/pt_map_bpa/run_1shot_augFalse_pretrained_metrics/max_acc.pth
 
