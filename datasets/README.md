@@ -30,6 +30,19 @@ Download the train/val/test split from this [repo](https://github.com/twitter-re
 └── ./cifar_fs/test/                            # test images
     └── ./cifar_fs/test/<class_name>/<class_image>.jpg 
 ```
+## HuGaDB:
+
+```
+./HuGaDB/
+        ├── images/
+        │   ├── walking/img1.jpg
+        │   ├── running/img2.jpg
+        │   └── ...
+        └── split/
+            ├── train.csv
+            ├── val.csv
+            └── test.csv
+```
 
 Run the following command to automatically download the dataset:
 

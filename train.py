@@ -6,6 +6,9 @@ from time import time
 import torch
 import csv
 import utils
+import torch.multiprocessing
+torch.multiprocessing.set_sharing_strategy('file_system')
+
 from bpa import BPA
 
 
@@ -35,7 +38,7 @@ def get_args():
     parser.add_argument('--checkpoint_dir', type=str, default=None,
                         help=""" Where to save model checkpoints. If None, it will automatically created. """)
     parser.add_argument('--dataset', type=str, default='miniimagenet',
-                        choices=['miniimagenet', 'cifar'])
+                        choices=['miniimagenet', 'cifar', 'hugadb'])
     parser.add_argument('--data_path', type=str, default='./datasets/few_shot/miniimagenet',
                         help="""Path to dataset root directory.""")
 
@@ -187,6 +190,10 @@ def main():
     print("Start training...")
     best_acc = 0.
     best_loss = math.inf
+    best_val_acc = 0.0
+    epochs_without_improvement = 0
+    early_stop_patience = 5  # you can tune this
+
     for epoch in range(args.max_epochs):
         print("[Epoch {}/{}]...".format(epoch, args.max_epochs))
 
@@ -198,6 +205,20 @@ def main():
         # evaluate
         if epoch % args.eval_freq == 0:
             eval_loss, eval_acc = eval_one_epoch(model, val_dataloader, fewshot_method, criterion, val_labels, epoch, args, set_name='val')
+
+            if eval_acc > best_val_acc:
+                best_val_acc = eval_acc
+                epochs_without_improvement = 0
+                # You may also want to save this best model here
+                torch.save(model.state_dict(), os.path.join(args.checkpoint_dir, 'best_model.pth'))
+                print(f"✅ New best val acc: {eval_acc:.4f} — model saved.")
+            else:
+                epochs_without_improvement += 1
+                print(f"⏳ No improvement. ({epochs_without_improvement}/{early_stop_patience})")
+
+            if epochs_without_improvement >= early_stop_patience:
+                print("🛑 Early stopping triggered!")
+                break  # This exits the epoch loop
 
             #print("📌 Calling log_to_csv()...")
             log_to_csv(epoch, train_loss, eval_loss, eval_acc, train_acc, output_dir)

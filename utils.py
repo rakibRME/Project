@@ -12,7 +12,8 @@ from torch.utils.data import DataLoader
 
 from models.wrn_mixup_model import wrn28_10
 from models.resnet12 import Res12
-from datasets import MiniImageNet, CIFAR, CUB
+from datasets import MiniImageNet, CIFAR, CUB, HuGaDB
+from datasets.hugadb import HuGaDB
 from datasets.samplers import CategoriesSampler
 from methods import PTMAPLoss, ProtoLoss
 
@@ -27,8 +28,12 @@ MODELS = dict(
     wrn=wrn28_10, resnet12=Res12
 )
 DATASETS = dict(
-    miniimagenet=MiniImageNet, cifar=CIFAR
+    miniimagenet=MiniImageNet,
+    cifar=CIFAR,
+    cub=CUB,
+    hugadb=HuGaDB  # ✅ Register it here
 )
+
 METHODS = dict(
     pt_map=PTMAPLoss, pt_map_bpa=PTMAPLoss, proto=ProtoLoss, proto_bpa=ProtoLoss,
 )
@@ -55,21 +60,31 @@ def get_dataloader(set_name: str, args: argparse, constant: bool = False):
     num_episodes = args.set_episodes[set_name]
     num_way = args.train_way if set_name == 'train' else args.val_way
 
-    # define dataset sampler and data loader
+    # define dataset
     data_set = DATASETS[args.dataset.lower()](
         args.data_path, set_name, args.backbone,
         augment=set_name == 'train' and args.augment
     )
     args.img_size = data_set.image_size
 
+    # ✅ Fix: Dynamically determine replacement
+    num_classes_in_split = len(set(data_set.label))
+    replace_flag = num_classes_in_split < num_way
+
+    # ✅ Helpful Debug Print
+    print(f"[INFO] {set_name} split has {num_classes_in_split} classes — using replace={replace_flag}")
+
+    # sampler
     data_sampler = CategoriesSampler(
         set_name, data_set.label, num_episodes, const_loader=constant,
         num_way=num_way, num_shot=args.num_shot, num_query=args.num_query,
-        replace=set_name == 'train',
+        replace=replace_flag
     )
+
     return DataLoader(
         data_set, batch_sampler=data_sampler, num_workers=args.num_workers, pin_memory=not constant
     )
+
 
 
 def get_optimizer_and_lr_scheduler(args, params):

@@ -14,4 +14,5 @@ python3 train.py \
   --val_way 5 \
   --num_query 15 \
   --test_episodes 2000 \
+--checkpoint_dir ./checkpoints/miniimagenet/wrn/pt_map_bpa/run_5shot_augFalse_metrics \
 --pretrained_path ./checkpoints/miniimagenet/wrn/pt_map_bpa/run_5shot_augFalse_metrics/max_acc.pth
